@@ -1,0 +1,190 @@
+-- SMARTSCRIPT HUB PREMIUM 2026 - DECORADO
+-- LocalScript (StarterPlayerScripts)
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- SETTINGS
+local KEY = "SMART2026"
+local authenticated = false
+local farming, flying, invisible = false, false, false
+local flySpeed = 50
+
+-- ===========================
+-- KEY SYSTEM GUI
+-- ===========================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player.PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 360, 0, 180)
+keyFrame.Position = UDim2.new(0.3,0,0.35,0)
+keyFrame.BackgroundColor3 = Color3.fromRGB(18,18,18)
+keyFrame.BorderSizePixel = 0
+keyFrame.Parent = ScreenGui
+local keyUICorner = Instance.new("UICorner", keyFrame)
+keyUICorner.CornerRadius = UDim.new(0,18)
+
+-- Glow neon line decor
+local keyLine = Instance.new("Frame")
+keyLine.Size = UDim2.new(1,0,0,3)
+keyLine.Position = UDim2.new(0,0,0,45)
+keyLine.BackgroundColor3 = Color3.fromRGB(180,0,255)
+keyLine.Parent = keyFrame
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1,0,0,50)
+keyTitle.Position = UDim2.new(0,0,0,0)
+keyTitle.Text = "Digite a Key"
+keyTitle.TextColor3 = Color3.fromRGB(200,200,255)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Font = Enum.Font.GothamBold
+keyTitle.TextSize = 24
+keyTitle.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(0.8,0,0,40)
+keyBox.Position = UDim2.new(0.1,0,0.4,0)
+keyBox.PlaceholderText = "KEY"
+keyBox.TextColor3 = Color3.fromRGB(255,255,255)
+keyBox.BackgroundColor3 = Color3.fromRGB(35,35,35)
+keyBox.Font = Enum.Font.GothamSemibold
+keyBox.TextSize = 18
+keyBox.Parent = keyFrame
+
+local keyButton = Instance.new("TextButton")
+keyButton.Size = UDim2.new(0.6,0,0,40)
+keyButton.Position = UDim2.new(0.2,0,0.7,0)
+keyButton.Text = "ENTRAR"
+keyButton.BackgroundColor3 = Color3.fromRGB(120,0,255)
+keyButton.TextColor3 = Color3.fromRGB(255,255,255)
+keyButton.Font = Enum.Font.GothamSemibold
+keyButton.TextSize = 18
+keyButton.Parent = keyFrame
+
+-- ===========================
+-- MAIN HUB GUI
+-- ===========================
+local function createMainFrame()
+	local Frame = Instance.new("Frame")
+	Frame.Size = UDim2.new(0,380,0,520)
+	Frame.Position = UDim2.new(0.05,0,0.05,0)
+	Frame.BackgroundColor3 = Color3.fromRGB(18,18,18)
+	Frame.BorderSizePixel = 0
+	Frame.Parent = ScreenGui
+	Frame.Active = true
+	Frame.Draggable = true
+	Frame.Visible = false
+
+	local UICorner = Instance.new("UICorner", Frame)
+	UICorner.CornerRadius = UDim.new(0,18)
+
+	local UIStroke = Instance.new("UIStroke", Frame)
+	UIStroke.Color = Color3.fromRGB(180,0,255)
+	UIStroke.Thickness = 2
+
+	-- Neon Lines Decor
+	for i=1,4 do
+		local line = Instance.new("Frame")
+		line.Size = UDim2.new(1,0,0,2)
+		line.Position = UDim2.new(0,0,0.1*i,0)
+		line.BackgroundColor3 = Color3.fromRGB(120,0,255)
+		line.BackgroundTransparency = 0.5
+		line.Parent = Frame
+	end
+
+	return Frame
+end
+
+local MainFrame = createMainFrame()
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,0,0,50)
+Title.Position = UDim2.new(0,0,0,0)
+Title.Text = "SmartScript Hub"
+Title.TextColor3 = Color3.fromRGB(200,200,255)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 26
+Title.Parent = MainFrame
+
+-- Função criar botões decorados
+local function createButton(name,posY)
+	local Button = Instance.new("TextButton")
+	Button.Size = UDim2.new(0.8,0,0,50)
+	Button.Position = UDim2.new(0.1,0,0,posY)
+	Button.Text = name
+	Button.BackgroundColor3 = Color3.fromRGB(120,0,255)
+	Button.TextColor3 = Color3.fromRGB(255,255,255)
+	Button.Font = Enum.Font.GothamSemibold
+	Button.TextSize = 18
+	Button.Parent = MainFrame
+
+	local UICorner = Instance.new("UICorner", Button)
+	UICorner.CornerRadius = UDim.new(0,14)
+
+	local UIStroke = Instance.new("UIStroke", Button)
+	UIStroke.Color = Color3.fromRGB(255,0,255)
+	UIStroke.Thickness = 2
+
+	-- Hover Glow
+	Button.MouseEnter:Connect(function()
+		Button.BackgroundColor3 = Color3.fromRGB(180,0,255)
+	end)
+	Button.MouseLeave:Connect(function()
+		Button.BackgroundColor3 = Color3.fromRGB(120,0,255)
+	end)
+
+	return Button
+end
+
+-- BOTÕES FUNÇÃO
+local btnAutoFarm = createButton("Auto Farm", 70)
+local btnFly = createButton("Voar", 140)
+local btnInvisible = createButton("Invisibilidade", 210)
+local btnTeleport = createButton("Teleporte Base", 280)
+
+-- ===========================
+-- KEY BUTTON LOGIC
+-- ===========================
+keyButton.MouseButton1Click:Connect(function()
+	if keyBox.Text == KEY then
+		authenticated = true
+		keyFrame:Destroy()
+		MainFrame.Visible = true
+	else
+		keyBox.Text = ""
+		keyBox.PlaceholderText = "KEY INVÁLIDA!"
+	end
+end)
+
+-- ===========================
+-- AUTO FARM
+-- ===========================
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		if farming then
+			for _,v in pairs(workspace:GetChildren()) do
+				if v:IsA("Part") and v.Name=="Coin" then
+					humanoidRootPart.CFrame = v.CFrame
+					task.wait(0.3)
+				end
+			end
+		end
+	end
+end)
+
+btnAutoFarm.MouseButton1Click:Connect(function()
+	farming = not farming
+	if farming then
+		btnAutoFarm.Text = "DESLIGAR AUTO FARM"
+		btnAutoFarm.BackgroundColor3 = Color3.fromRGB(255,0,255)
+	else
+		btnAutoFarm
